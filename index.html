@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lab Maya — Mengenal Jaring-Jaring Kubus</title>
+<link rel="icon" href="assets/logos/logo1.png" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo-left">
+    <img src="assets/logos/logo1.png" alt="Kemendikdasmen" />
+  </div>
+  <div class="title-block">
+    <div class="eyebrow">Laboratorium Matematika Maya</div>
+    <h1>Mengenal Jaring-Jaring Kubus</h1>
+    <div class="subtitle">Jenjang SMP — Bangun Ruang Sisi Datar</div>
+  </div>
+  <div class="logo-right">
+    <img src="assets/logos/logo2.png" alt="Sobat SMP" />
+    <img src="assets/logos/logo3.png" alt="Pendidikan Bermutu Untuk Semua" />
+    <img src="assets/logos/logo4.png" alt="Kemendikdasmen Ramah" />
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-tab="tujuan"><span class="num">01</span><span class="lbl">Tujuan</span></button>
+  <button class="tab" data-tab="panduan"><span class="num">02</span><span class="lbl">Panduan Simulasi</span></button>
+  <button class="tab locked" data-tab="simulasi" id="tab-simulasi">
+    <span class="num">03</span><span class="lbl">Aktivitas Simulasi</span>
+    <span class="lock" title="Buka Tujuan & Panduan dulu">🔒</span>
+  </button>
+  <button class="tab" data-tab="materi"><span class="num">04</span><span class="lbl">Materi Esensial</span></button>
+  <button class="tab" data-tab="latihan"><span class="num">05</span><span class="lbl">Latihan Soal</span></button>
+  <button class="tab" data-tab="pengembang"><span class="num">06</span><span class="lbl">Pengembang</span></button>
+</nav>
+
+<main class="stage">
+
+  <section class="panel active" id="panel-tujuan">
+    <div class="panel-head">
+      <div class="tag tag-blue">Tujuan Pembelajaran</div>
+      <h2>Apa yang akan kamu capai?</h2>
+      <p class="lead">Setelah menyelesaikan laboratorium maya ini, kamu diharapkan mampu:</p>
+    </div>
+    <div class="goal-grid">
+      <div class="goal-card">
+        <div class="goal-num">1</div>
+        <h3>Mengidentifikasi</h3>
+        <p>Menentukan mana rangkaian enam persegi yang <b>merupakan</b> jaring-jaring kubus dan mana yang <b>bukan</b>.</p>
+      </div>
+      <div class="goal-card">
+        <div class="goal-num">2</div>
+        <h3>Menganalisis</h3>
+        <p>Menganalisis 11 jenis jaring-jaring kubus beserta pola susunan persegi pembentuknya.</p>
+      </div>
+      <div class="goal-card">
+        <div class="goal-num">3</div>
+        <h3>Memvisualisasikan</h3>
+        <p>Melipat jaring-jaring dua dimensi menjadi kubus tiga dimensi melalui simulasi interaktif.</p>
+      </div>
+      <div class="goal-card">
+        <div class="goal-num">4</div>
+        <h3>Menerapkan</h3>
+        <p>Menyelesaikan soal kontekstual tentang jaring-jaring kubus, sisi berhadapan, dan luas permukaan.</p>
+      </div>
+    </div>
+    <div class="cta-row">
+      <button class="btn btn-primary" data-goto="panduan">Lanjut ke Panduan →</button>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-panduan">
+    <div class="panel-head">
+      <div class="tag tag-orange">Panduan Simulasi</div>
+      <h2>Cara menggunakan Lab Maya</h2>
+      <p class="lead">Ikuti langkah berikut agar pengalaman belajarmu lebih maksimal.</p>
+    </div>
+    <ol class="steps">
+      <li>
+        <div class="step-badge">A</div>
+        <div>
+          <h3>Pilih Jaring-Jaring</h3>
+          <p>Tersedia <b>11 pola</b> jaring-jaring kubus. Klik salah satu kartu untuk memilih.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-badge">B</div>
+        <div>
+          <h3>Lipat menjadi Kubus</h3>
+          <p>Tekan tombol <b>Lipat</b> atau geser slider untuk melihat proses melipat jaring-jaring menjadi kubus 3D.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-badge">C</div>
+        <div>
+          <h3>Amati &amp; Putar</h3>
+          <p>Tekan tombol <b>Putar</b> untuk mengamati kubus dari berbagai sudut pandang.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-badge">D</div>
+        <div>
+          <h3>Uji Pemahaman</h3>
+          <p>Setelah bereksplorasi, buka menu <b>Latihan Soal</b> untuk menguji kemampuanmu.</p>
+        </div>
+      </li>
+    </ol>
+    <div class="callout">
+      <div class="callout-icon">💡</div>
+      <div>
+        <b>Catatan:</b> Menu <b>Aktivitas Simulasi</b> akan aktif setelah kamu membuka menu <i>Tujuan</i> dan <i>Panduan Simulasi</i>.
+      </div>
+    </div>
+    <div class="cta-row">
+      <button class="btn btn-primary" id="btn-open-sim">Mulai Simulasi →</button>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-simulasi">
+    <div class="panel-head">
+      <div class="tag tag-green">Aktivitas Simulasi</div>
+      <h2>Melipat Jaring-Jaring menjadi Kubus</h2>
+      <p class="lead">Pilih salah satu dari 11 jaring-jaring kubus, lalu lipat menjadi kubus 3D.</p>
+    </div>
+
+    <div class="sim-layout">
+      <aside class="net-picker">
+        <h3>11 Pola Jaring-Jaring</h3>
+        <div class="net-grid" id="netGrid"></div>
+      </aside>
+
+      <div class="sim-stage">
+        <div class="scene-wrap">
+          <div class="scene" id="scene">
+            <div class="cube" id="cube">
+              <div class="face f-top">Atas</div>
+              <div class="face f-bottom">Bawah</div>
+              <div class="face f-front">Depan</div>
+              <div class="face f-back">Belakang</div>
+              <div class="face f-left">Kiri</div>
+              <div class="face f-right">Kanan</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-controls">
+          <div class="slider-row">
+            <label for="foldSlider">Lipat</label>
+            <input type="range" id="foldSlider" min="0" max="100" value="0" />
+            <span id="foldVal">0%</span>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-outline" id="btnUnfold">↺ Buka</button>
+            <button class="btn btn-primary" id="btnFold">▶ Lipat</button>
+            <button class="btn btn-outline" id="btnRotate">🔄 Putar Kubus</button>
+          </div>
+          <div class="info-pill" id="netInfo">Pilih pola jaring-jaring di samping untuk memulai.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-materi">
+    <div class="panel-head">
+      <div class="tag tag-purple">Materi Esensial</div>
+      <h2>Konsep Jaring-Jaring Kubus</h2>
+    </div>
+
+    <div class="mat-grid">
+      <div class="mat-card">
+        <h3>Definisi</h3>
+        <p>Jaring-jaring kubus adalah rangkaian <b>enam buah persegi kongruen</b> yang saling berhubungan pada sisinya, dan apabila dilipat akan membentuk sebuah <b>kubus</b>.</p>
+      </div>
+      <div class="mat-card">
+        <h3>Ciri-Ciri</h3>
+        <ul>
+          <li>Terdiri dari <b>6 persegi</b> yang kongruen.</li>
+          <li>Setiap sisi persegi berimpit dengan sisi persegi lain.</li>
+          <li>Tidak boleh ada dua sisi yang saling menutupi saat dilipat.</li>
+          <li>Terdapat <b>11 pola</b> jaring-jaring kubus yang berbeda.</li>
+        </ul>
+      </div>
+      <div class="mat-card">
+        <h3>Rumus Penting</h3>
+        <div class="formula">Luas Permukaan<br><span>L = 6 × s²</span></div>
+        <div class="formula">Volume<br><span>V = s³</span></div>
+        <p class="muted">dengan <i>s</i> = panjang rusuk kubus.</p>
+      </div>
+      <div class="mat-card wide">
+        <h3>Klasifikasi 11 Jaring-Jaring Kubus</h3>
+        <p>Berdasarkan susunan barisan perseginya, 11 pola dikelompokkan menjadi empat tipe:</p>
+        <div class="klas">
+          <div class="klas-item"><b>Tipe 1-4-1</b><span>6 pola</span></div>
+          <div class="klas-item"><b>Tipe 1-3-2</b><span>3 pola</span></div>
+          <div class="klas-item"><b>Tipe 2-2-2</b><span>1 pola</span></div>
+          <div class="klas-item"><b>Tipe 3-3</b><span>1 pola</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-latihan">
+    <div class="panel-head">
+      <div class="tag tag-pink">Latihan Soal</div>
+      <h2>Uji Pemahamanmu</h2>
+      <p class="lead">Kerjakan soal-soal berikut. Skor akhirmu akan muncul setelah menekan tombol Periksa.</p>
+    </div>
+
+    <div class="quiz" id="quiz"></div>
+    <div class="quiz-actions">
+      <button class="btn btn-primary" id="btnCheck">✔ Periksa Jawaban</button>
+      <button class="btn btn-outline" id="btnReset">↺ Ulangi</button>
+      <div class="score" id="score"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-pengembang">
+    <div class="panel-head">
+      <div class="tag tag-blue">Pengembang</div>
+      <h2>Tim Pengembang Lab Maya</h2>
+    </div>
+    <div class="dev-institution">
+      <img src="assets/logos/logo1.png" alt="Kemendikdasmen" class="dev-logo" />
+      <div>
+        <h3>Kementerian Pendidikan Dasar dan Menengah</h3>
+        <p class="dev-sub">Direktorat Jenderal Pendidikan Anak Usia Dini, Pendidikan Dasar, dan Pendidikan Nonformal dan Informal</p>
+        <p class="dev-sub"><b>Direktorat SMP</b></p>
+      </div>
+    </div>
+
+    <div class="dev-grid">
+      <div class="dev-block">
+        <div class="dev-block-title">Penanggung Jawab</div>
+        <ol class="dev-list">
+          <li><b>Dr. Maulani Mega Hapsari, S.IP, M.A.</b><span>Direktur SMP</span></li>
+          <li><b>Roelly Herdyanto, S.E., M.Si.</b><span>Kasubag Tata Usaha Direktorat SMP</span></li>
+          <li><b>Cepy Lukman Rusdiana, S.Kom., M.Si.</b><span>Kasubdit Fasilitasi Sarana dan Prasarana Tatakelola Direktorat SMP</span></li>
+          <li><b>Hendro Sucipto, S.Kom.</b><span>Pejabat Pembuat Komitmen Direktorat SMP</span></li>
+        </ol>
+      </div>
+
+      <div class="dev-block">
+        <div class="dev-block-title">Penyunting</div>
+        <ol class="dev-list">
+          <li><b>Dra. Nikensari, M.Ed.</b><span>Direktorat SMP</span></li>
+          <li><b>Dr. Noris Rahmatullah, S.T., M.T.</b><span>Direktorat SMP</span></li>
+          <li><b>Rindhy Anthika Nadya, S.Kom.</b><span>Direktorat SMP</span></li>
+          <li><b>Agus Riyanto, S.E.</b><span>Direktorat SMP</span></li>
+          <li><b>Umi Syarifah H., S.Pd.</b><span>Direktorat SMP</span></li>
+        </ol>
+      </div>
+
+      <div class="dev-block dev-author">
+        <div class="dev-block-title">Penulis Naskah &amp; Pengembang Media</div>
+        <div class="dev-author-card">
+          <div class="dev-avatar">👨‍🏫</div>
+          <div>
+            <h4>Teguh Wiryanto</h4>
+            <p>SMPN 4 Cipeundeuy</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer-note">© 2026 — Direktorat SMP, Kementerian Pendidikan Dasar dan Menengah. Dibuat untuk mendukung <b>#PendidikanBermutuUntukSemua</b>.</p>
+  </section>
+
+</main>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -8,6 +8,19 @@
   const panels = document.querySelectorAll('.panel');
   const simTab = document.getElementById('tab-simulasi');
 
+  /* --------- SIDEBAR TOGGLE --------- */
+  const sbToggle = document.getElementById('sidebarToggle');
+  if(sbToggle){
+    sbToggle.addEventListener('click', ()=>{
+      document.body.classList.toggle('sb-collapsed');
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+    if(window.innerWidth < 900){
+      document.body.classList.add('sb-collapsed');
+      document.getElementById('sidebar').classList.add('collapsed');
+    }
+  }
+
   function setActive(name){
     tabs.forEach(t => t.classList.toggle('active', t.dataset.tab===name));
     panels.forEach(p => p.classList.toggle('active', p.id===('panel-'+name)));
@@ -95,12 +108,12 @@
     { id:8, type:'1-3-2', cells:[
       {f:'U',r:0,c:0},
       {f:'L',r:1,c:0},{f:'F',r:1,c:1},{f:'R',r:1,c:2},
-      {f:'D',r:2,c:1},{f:'B',r:2,c:2}
+      {f:'D',r:2,c:2},{f:'B',r:2,c:3}
     ]},
     { id:9, type:'1-3-2', cells:[
       {f:'U',r:0,c:2},
       {f:'L',r:1,c:0},{f:'F',r:1,c:1},{f:'R',r:1,c:2},
-      {f:'D',r:2,c:0},{f:'B',r:2,c:1}
+      {f:'D',r:2,c:2},{f:'B',r:2,c:3}
     ]},
     { id:10, type:'2-2-2', cells:[
       {f:'U',r:0,c:0},{f:'L',r:0,c:1},
@@ -108,8 +121,8 @@
       {f:'D',r:2,c:2},{f:'B',r:2,c:3}
     ]},
     { id:11, type:'3-3', cells:[
-      {f:'U',r:0,c:0},{f:'L',r:0,c:1},{f:'F',r:0,c:2},
-      {f:'R',r:1,c:1},{f:'D',r:1,c:2},{f:'B',r:1,c:3}
+      {f:'B',r:0,c:0},{f:'L',r:0,c:1},{f:'F',r:0,c:2},
+      {f:'D',r:1,c:2},{f:'R',r:1,c:3},{f:'U',r:1,c:4}
     ]}
   ];
 
@@ -144,76 +157,102 @@
     netGrid.appendChild(card);
   });
 
-  /* --------- 3D CUBE / HINGE FOLD ANIMATION --------- */
+  /* --------- 3D CUBE / HINGE FOLD (nested wrappers) --------- */
   const scene   = document.getElementById('scene');
   const cubeEl  = document.getElementById('cube');
   const foldSl  = document.getElementById('foldSlider');
   const foldVal = document.getElementById('foldVal');
   const netInfo = document.getElementById('netInfo');
-  const FACE_SIZE = 120;
-  const HALF = FACE_SIZE/2;
-
-  cubeEl.innerHTML = '';
-  const faceEls = {};
-  ['F','B','U','D','L','R'].forEach(f => {
-    const el = document.createElement('div');
-    el.className = 'face f-' + ({F:'front',B:'back',U:'top',D:'bottom',L:'left',R:'right'})[f];
-    el.style.width = FACE_SIZE+'px';
-    el.style.height = FACE_SIZE+'px';
-    el.style.marginLeft = (-HALF)+'px';
-    el.style.marginTop  = (-HALF)+'px';
-    el.textContent = FACE_COLORS[f].label;
-    cubeEl.appendChild(el);
-    faceEls[f] = el;
-  });
-
-  // Build hinge chain from F to each face by BFS across net adjacency.
-  function computeNetGeometry(net){
-    const key = (r,c) => r+','+c;
-    const map = new Map();
-    net.cells.forEach(c => map.set(key(c.r,c.c), { r:c.r, c:c.c, f:c.f, parent:null }));
-    const F = net.cells.find(x => x.f==='F');
-    const q = [key(F.r,F.c)];
-    const seen = new Set(q);
-    while(q.length){
-      const k = q.shift();
-      const node = map.get(k);
-      [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{
-        const nk = key(node.r+dr, node.c+dc);
-        if(map.has(nk) && !seen.has(nk)){
-          seen.add(nk);
-          map.get(nk).parent = node;
-          q.push(nk);
-        }
-      });
-    }
-    const steps = {};
-    map.forEach(node => {
-      const chain = [];
-      let cur = node;
-      while(cur.parent){
-        chain.unshift({ dc: cur.c - cur.parent.c, dr: cur.r - cur.parent.r });
-        cur = cur.parent;
-      }
-      steps[node.f] = chain;
-    });
-    const rs = net.cells.map(c=>c.r), cs = net.cells.map(c=>c.c);
-    const rC = (Math.min(...rs)+Math.max(...rs))/2;
-    const cC = (Math.min(...cs)+Math.max(...cs))/2;
-    const flatOffset = {
-      x: (cC - F.c) * FACE_SIZE,
-      y: (rC - F.r) * FACE_SIZE
-    };
-    return { steps, flatOffset };
-  }
+  const FACE_SIZE = 96;
+  const H = FACE_SIZE/2;
 
   let currentNet = null;
   let sceneRot = { x:-22, y:-32 };
   scene.style.transform = `rotateX(${sceneRot.x}deg) rotateY(${sceneRot.y}deg)`;
 
+  // Auto-scale the scene so the flat net (pattern 11 is widest = 5 cells)
+  // fits comfortably inside the viewport, avoiding clipping.
+  function fitSceneScale(){
+    const wrap = document.getElementById('sceneWrap') || scene.parentElement;
+    if(!wrap) return;
+    const availW = wrap.clientWidth  - 40;
+    const availH = wrap.clientHeight - 40;
+    // Widest flat extent is 5 * FACE_SIZE (pattern 11); tallest is 3 * FACE_SIZE.
+    const needW = 5 * FACE_SIZE;
+    const needH = 3 * FACE_SIZE + 40;
+    const s = Math.min(1, availW/needW, availH/needH);
+    scene.style.setProperty('--scene-scale', s.toFixed(3));
+  }
+  window.addEventListener('resize', fitSceneScale);
+  setTimeout(fitSceneScale, 0);
+
+  // Build BFS tree from F. Each node knows its (dc,dr) from parent and children.
+  function buildTree(net){
+    const key = (r,c)=> r+','+c;
+    const map = new Map();
+    net.cells.forEach(c => map.set(key(c.r,c.c),
+      { r:c.r, c:c.c, f:c.f, parent:null, dc:0, dr:0, children:[] }));
+    const F = net.cells.find(x => x.f==='F');
+    const root = map.get(key(F.r,F.c));
+    const q = [root]; const seen = new Set([key(F.r,F.c)]);
+    while(q.length){
+      const n = q.shift();
+      [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{
+        const nk = key(n.r+dr, n.c+dc);
+        if(map.has(nk) && !seen.has(nk)){
+          seen.add(nk);
+          const ch = map.get(nk);
+          ch.parent = n; ch.dc = dc; ch.dr = dr;
+          n.children.push(ch);
+          q.push(ch);
+        }
+      });
+    }
+    const rs = net.cells.map(c=>c.r), cs = net.cells.map(c=>c.c);
+    const rC = (Math.min(...rs)+Math.max(...rs))/2;
+    const cC = (Math.min(...cs)+Math.max(...cs))/2;
+    return { root, flatOffset:{ x:(cC-F.c)*FACE_SIZE, y:(rC-F.r)*FACE_SIZE } };
+  }
+
+  // Build a DOM tree of nested hinge-wrappers so each child's rotation
+  // naturally composes in its parent-face's local frame.
+  function buildDOM(node, parent){
+    // Face element (positioned at wrapper origin = face center).
+    const face = document.createElement('div');
+    face.className = 'face f-' + ({F:'front',B:'back',U:'top',D:'bottom',L:'left',R:'right'})[node.f];
+    face.style.width = FACE_SIZE+'px';
+    face.style.height = FACE_SIZE+'px';
+    face.style.marginLeft = (-H)+'px';
+    face.style.marginTop  = (-H)+'px';
+    face.textContent = FACE_COLORS[node.f].label;
+    parent.appendChild(face);
+    node._face = face;
+    // For each child: a hinge-wrapper sits at the shared edge center,
+    // rotates about that edge, then holds the child's DOM subtree.
+    node.children.forEach(ch => {
+      const hinge = document.createElement('div');
+      hinge.className = 'hinge';
+      // Position hinge origin at edge midpoint relative to parent face center.
+      hinge.style.left = (ch.dc * H) + 'px';
+      hinge.style.top  = (ch.dr * H) + 'px';
+      parent.appendChild(hinge);
+      // Wrapper for child face: offset another half-edge past the hinge,
+      // so child face center sits at (dc*FACE_SIZE, dr*FACE_SIZE) from parent center.
+      const inner = document.createElement('div');
+      inner.className = 'hinge-inner';
+      inner.style.left = (ch.dc * H) + 'px';
+      inner.style.top  = (ch.dr * H) + 'px';
+      hinge.appendChild(inner);
+      ch._hinge = hinge;
+      buildDOM(ch, inner);
+    });
+  }
+
   function selectNet(id){
     currentNet = NETS.find(n=>n.id===id);
-    currentNet._geo = computeNetGeometry(currentNet);
+    currentNet._tree = buildTree(currentNet);
+    cubeEl.innerHTML = '';
+    buildDOM(currentNet._tree.root, cubeEl);
     document.querySelectorAll('.net-card').forEach(c=>{
       c.classList.toggle('active', +c.dataset.id===id);
     });
@@ -222,37 +261,32 @@
     applyFold(0);
   }
 
+  function walkApply(node, angle){
+    node.children.forEach(ch => {
+      const rot = ch.dc !== 0
+        ? `rotateY(${-ch.dc * angle}deg)`
+        : `rotateX(${ ch.dr * angle}deg)`;
+      ch._hinge.style.transform = rot;
+      walkApply(ch, angle);
+    });
+  }
+
   function applyFold(pct){
     if(!currentNet){
-      Object.values(faceEls).forEach(el => el.style.opacity = '0.15');
       foldVal.textContent = Math.round(pct) + '%';
       foldSl.style.setProperty('--pct', pct + '%');
       return;
     }
-    Object.values(faceEls).forEach(el => el.style.opacity = '1');
     const t = pct/100;
-    const { steps, flatOffset } = currentNet._geo;
-    const H = HALF;
-
-    // Center: at t=0 shift by flat net center; at t=1 pull front face back by HALF so cube center hits origin.
+    const angle = 90 * t;
+    const { root, flatOffset } = currentNet._tree;
+    // Shift so flat net is centered when unfolded; cube center hits origin when folded.
     const cx = -flatOffset.x * (1 - t);
     const cy = -flatOffset.y * (1 - t);
     const cz = -H * t;
     cubeEl.style.transform = `translate3d(${cx}px, ${cy}px, ${cz}px)`;
-
-    ['F','B','U','D','L','R'].forEach(f => {
-      const el = faceEls[f];
-      const chain = steps[f] || [];
-      let tr = '';
-      for(const st of chain){
-        const angle = 90 * t;
-        const rot = st.dc !== 0
-          ? `rotateY(${-st.dc * angle}deg)`
-          : `rotateX(${ st.dr * angle}deg)`;
-        tr += ` translate3d(${st.dc*H}px, ${st.dr*H}px, 0) ${rot} translate3d(${st.dc*H}px, ${st.dr*H}px, 0)`;
-      }
-      el.style.transform = tr.trim() || 'translate3d(0,0,0)';
-    });
+    fitSceneScale();
+    walkApply(root, angle);
     foldVal.textContent = Math.round(pct) + '%';
     foldSl.style.setProperty('--pct', pct + '%');
   }
